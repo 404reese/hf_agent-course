@@ -1,4 +1,4 @@
-from smolagents import CodeAgent,DuckDuckGoSearchTool, HfApiModel,load_tool,tool
+from smolagents import CodeAgent, HfApiModel, load_tool, tool
 import datetime
 import os
 import requests
@@ -6,6 +6,8 @@ import pytz
 import yaml
 from dotenv import load_dotenv
 from tools.final_answer import FinalAnswerTool
+from tools.web_search import DuckDuckGoSearchTool
+from tools.visit_webpage import VisitWebpageTool
 
 from Gradio_UI import GradioUI
 
@@ -37,6 +39,8 @@ def get_current_time_in_timezone(timezone: str) -> str:
 
 
 final_answer = FinalAnswerTool()
+web_search = DuckDuckGoSearchTool()
+visit_webpage = VisitWebpageTool()
 
 load_dotenv(".env.local")
 hf_token = os.getenv("HF_TOKEN")
@@ -61,7 +65,14 @@ with open("prompts.yaml", 'r') as stream:
     
 agent = CodeAgent(
     model=model,
-    tools=[final_answer], ## add your tools here (don't remove final answer)
+    tools=[
+        final_answer,
+        web_search,
+        visit_webpage,
+        get_current_time_in_timezone,
+        image_generation_tool,
+        my_custom_tool
+    ], ## add your tools here (don't remove final answer)
     max_steps=6,
     verbosity_level=1,
     grammar=None,
